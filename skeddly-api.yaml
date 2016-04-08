@@ -1,0 +1,119 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.1"
+  title: Skeddly API
+
+# the domain of the service
+host: api.skeddly.com
+
+# array of all schemes that your API supports
+schemes:
+  - https
+
+# will be prefixed to all paths
+basePath: /api
+
+produces:
+  - application/json
+
+security:
+  - accessKeyAuth: []
+  
+securityDefinitions:
+  accessKeyAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    
+# Describe your paths here
+paths:
+  # This is a path endpoint. Change it.
+  /Actions:
+    # This is a HTTP operation
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: |
+        Retrieves the list of actions.
+      
+      tags:
+        - Actions
+      
+      security:
+        - accessKeyAuth: []
+        
+        # This is array of GET operation parameters:
+      parameters:
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.actionTypes
+          in: query
+          description: List of action types. 
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.credentialIds
+          in: query
+          description: List of credential IDs.
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.isEnabled
+          in: query
+          description: True or False.
+          required: false
+          type: boolean
+
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListActionsResponse
+            type: array
+            items:
+              $ref: '#/definitions/Action'
+                    
+definitions:
+  Action:
+    type: object
+    required:
+      - actionId
+      - actionType
+      - actionVersionId
+      - credentialId
+      - isEnabled
+      - lastModifiedBy
+      - lastModifiedDate
+      - name
+      - regionName
+      
+    properties:
+      actionId:
+        type: string
+      actionType:
+        type: string
+      actionVersionId:
+        type: string
+      credentialId:
+        type: string
+      isEnabled:
+        type: boolean
+      lastModifiedBy:
+        type: string
+      lastModifiedDate:
+        type: string
+        format: date-time
+      name:
+        type: string
+      regionName:
+        type: string
+      
