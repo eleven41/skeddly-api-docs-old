@@ -21,6 +21,9 @@ basePath: /api
 
 produces:
   - application/json
+  
+consumes:
+  - application/json
 
 security:
   - accessKeyAuth: []
@@ -31,10 +34,9 @@ securityDefinitions:
     in: header
     name: Authorization
     
-# Describe your paths here
 paths:
 
-  # Actions list
+  # Actions
   /Actions:
     get:
       description: |
@@ -85,7 +87,7 @@ paths:
             items:
               $ref: '#/definitions/Action'
   
-  # List of managed instance groups
+  # Managed Instance Groups
   /ManagedInstanceGroups:
     get:
       description: |
@@ -196,7 +198,7 @@ definitions:
         
   DailyScheduleParameters:
     type: object
-    description: Parameters for a "daily" schedule.
+    description: Parameters for a 'daily' schedule.
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
       -
@@ -217,7 +219,7 @@ definitions:
                 
   HourlyScheduleParameters:
     type: object
-    description: Parameters for a "hourly" schedule.
+    description: Parameters for a 'hourly' schedule.
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
       -
@@ -329,7 +331,7 @@ definitions:
       timeOfDay:
         type: string
         description: Time of day to execute the schedule.
-          Local to the time zone of the Managed Instance or Managed Instance Group. Format is 24-hour, "hh:mm:ss".
+          Local to the time zone of the Managed Instance or Managed Instance Group. Format is 24-hour, 'hh:mm:ss'.
         pattern: '[0-2][0-9]:[0-5][0-9]:[0-5][0-9]'
       parameters:
         $ref: '#/definitions/ScheduleParameters'
@@ -352,11 +354,17 @@ definitions:
   
   MonthlyScheduleParameters:
     type: object
-    description: Parameters for a "monthly" schedule.
+    description: Parameters for a 'monthly' schedule.
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
       -
         properties:
+          dayOfMonth:
+            type: string
+            enum:
+              - indicate-day-and-week
+              - last-day
+              - same-day-as-start
           months:
             type: array
             description: Months of the year in which to execute.
@@ -375,6 +383,8 @@ definitions:
                 - october
                 - november
                 - december
+          weekAndDay:
+            $ref: '#/definitions/WeekAndDay'
                 
   NoneScheduleParameters:
     type: object
@@ -397,4 +407,34 @@ definitions:
         type: string
         maxLength: 255
         
+  WeekAndDay:
+    type: object
+    required:
+      - day
+      - week
+    properties:
+      week:
+        type: string
+        enum:
+          - first
+          - second
+          - third
+          - fourth
+          - last
+      day:
+        type: string
+        enum:
+          - sunday
+          - monday
+          - tuesday
+          - wednesday
+          - thursday
+          - friday
+          - saturday 
+
+  WeeklyScheduleParameters:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ScheduleParameters'
+      
 # End of file
