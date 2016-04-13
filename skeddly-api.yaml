@@ -142,7 +142,36 @@ paths:
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
             
-  /ManagedInstanceGroups/{id}:       
+  /ManagedInstanceGroups/{id}: 
+    get:
+      description: |
+        Retrieves an existing Managed Instance Group.
+        
+      tags:
+        - managed-instances
+      
+      security:
+        - accessKeyAuth: []
+        
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing Managed Instance Group to be retrieved.
+          required: true
+          type: string
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+          
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ManagedInstanceGroup'
+            
     put:
       description: |
         Updates an existing Managed Instance Group.
@@ -443,7 +472,6 @@ definitions:
     type: object
     required:
       - name
-      - managedInstanceGroupId
       - timeZoneId
     properties:
       backupParameters:
