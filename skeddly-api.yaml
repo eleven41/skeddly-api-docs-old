@@ -141,6 +141,36 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
+            
+  /ManagedInstanceGroups/{id}:       
+    put:
+      description: |
+        Updates an existing Managed Instance Group.
+        
+      tags:
+        - managed-instances
+      
+      security:
+        - accessKeyAuth: []
+        
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing Managed Instance Group to be updated.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Managed Instance Group to be created.
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateManagedInstanceGroup'
+          
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ManagedInstanceGroup'
               
 definitions:
 
@@ -321,6 +351,8 @@ definitions:
       - timeOfDay
       - parameters
     properties:
+      parameters:
+        $ref: '#/definitions/ScheduleParameters'
       scheduleType:
         type: string
         description: Type of schedule.
@@ -333,8 +365,6 @@ definitions:
         description: Time of day to execute the schedule.
           Local to the time zone of the Managed Instance or Managed Instance Group. Format is 24-hour, 'hh:mm:ss'.
         pattern: '[0-2][0-9]:[0-5][0-9]:[0-5][0-9]'
-      parameters:
-        $ref: '#/definitions/ScheduleParameters'
   
   ManagedInstanceStartStopParameters:
     type: object
@@ -358,6 +388,8 @@ definitions:
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
       -
+        required:
+          - dayOfMonth
         properties:
           dayOfMonth:
             type: string
@@ -407,6 +439,25 @@ definitions:
         type: string
         maxLength: 255
         
+  UpdateManagedInstanceGroup:
+    type: object
+    required:
+      - name
+      - managedInstanceGroupId
+      - timeZoneId
+    properties:
+      backupParameters:
+        $ref: '#/definitions/ManagedInstanceBackupParameters'
+      deleteBackupsParameters:
+        $ref: '#/definitions/ManagedInstanceDeleteBackupsParameters'
+      name:
+        type: string
+        maxLength: 255
+      startStopParameters:
+        $ref: '#/definitions/ManagedInstanceStartStopParameters'
+      timeZoneId:
+        type: string
+        
   WeekAndDay:
     type: object
     required:
@@ -436,5 +487,13 @@ definitions:
     type: object
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
+      -
+        required:
+          - dayOfWeek
+        properties:
+          dayOfWeek:
+            type: string
+            enum:
+              - same-day-as-start
       
 # End of file
