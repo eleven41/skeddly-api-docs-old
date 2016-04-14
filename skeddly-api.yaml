@@ -200,6 +200,31 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
+  
+  /TimeZones:
+    get:
+      description: |
+        Retrieves the list of available time zones.
+      
+      tags:
+        - actions
+      
+      security:
+        - accessKeyAuth: []
+        
+        # This is array of GET operation parameters:
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListTimeZonesResponse
+            type: array
+            items:
+              $ref: '#/definitions/TimeZone'
               
 definitions:
 
@@ -467,6 +492,18 @@ definitions:
       value:
         type: string
         maxLength: 255
+
+  TimeZone:
+    type: object
+    description: A time zone.
+    required:
+      - displayName
+      - timeZoneId
+    properties:
+      displayName:
+        type: string
+      timeZoneId:
+        type: string
         
   UpdateManagedInstanceGroup:
     type: object
