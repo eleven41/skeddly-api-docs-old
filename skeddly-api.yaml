@@ -201,6 +201,88 @@ paths:
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
   
+  /Users/ManagedPolicies:
+    get:
+      description: |
+        Retrieves the list of available managed policies.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListManagedPoliciesResponse
+            type: array
+            items:
+              $ref: '#/definitions/ManagedPolicy'
+  
+  /Users/ManagedPolicies/{id}:
+    get:
+      description: |
+        Retrieves information about a single managed policy.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the managed policy to be retrieved.
+          required: true
+          type: string    
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/ManagedPolicy'
+            
+  /Users/ManagedPolicies/{id}/PolicyDocument:
+    get:
+      description: |
+        Retrieves the policy document for a single managed policy.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the managed policy.
+          required: true
+          type: string    
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            type: string
+            
   /TimeZones:
     get:
       description: |
@@ -464,6 +546,18 @@ definitions:
         minimum: 1
         maximum: 86400
   
+  ManagedPolicy:
+    type: object
+    description: A managed policy.
+  required:
+    - managedPolicyId
+    - name
+  properties:
+    managedPolicyId:
+      type: string
+    name:
+      type: string
+        
   MonthlyScheduleParameters:
     type: object
     description: Parameters for a 'monthly' schedule.
