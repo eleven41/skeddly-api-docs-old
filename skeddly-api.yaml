@@ -201,7 +201,7 @@ paths:
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
   
-  /Users/ManagedPolicies:
+  /ManagedPolicies:
     get:
       description: |
         Retrieves the list of available managed policies.
@@ -225,7 +225,7 @@ paths:
             items:
               $ref: '#/definitions/ManagedPolicy'
   
-  /Users/ManagedPolicies/{id}:
+  /ManagedPolicies/{id}:
     get:
       description: |
         Retrieves information about a single managed policy.
@@ -254,7 +254,7 @@ paths:
           schema:
             $ref: '#/definitions/ManagedPolicy'
             
-  /Users/ManagedPolicies/{id}/PolicyDocument:
+  /ManagedPolicies/{id}/PolicyDocument:
     get:
       description: |
         Retrieves the policy document for a single managed policy.
