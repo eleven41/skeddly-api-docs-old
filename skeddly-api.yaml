@@ -335,6 +335,59 @@ paths:
           # Use JSON Schema format
           schema:
             $ref: '#/definitions/TimeZone'
+            
+  /Users:
+    get:
+      description: |
+        Retrieves the list of users configured in the account.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListUsersResponse
+            type: array
+            items:
+              $ref: '#/definitions/User'
+              
+  /Users/{id}:
+    get:
+      description: |
+        Retrieves information about a single user.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to be retrieved.
+          required: true
+          type: string    
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/User'
               
 definitions:
 
@@ -549,14 +602,14 @@ definitions:
   ManagedPolicy:
     type: object
     description: A managed policy.
-  required:
-    - managedPolicyId
-    - name
-  properties:
-    managedPolicyId:
-      type: string
-    name:
-      type: string
+    required:
+      - managedPolicyId
+      - name
+    properties:
+      managedPolicyId:
+        type: string
+      name:
+        type: string
         
   MonthlyScheduleParameters:
     type: object
@@ -643,6 +696,42 @@ definitions:
       startStopParameters:
         $ref: '#/definitions/ManagedInstanceStartStopParameters'
       timeZoneId:
+        type: string
+  
+  User:
+    type: object
+    description: A user.
+    required:
+      - userId
+      - username
+      - emailAddress
+      - status
+      - lastAccessDate
+      - mfaType
+    properties:
+      emailAddress:
+        type: string
+      lastAccessDate:
+        type: string
+      managedPolicies:
+        type: array
+        items:
+          $ref: '#/definitions/ManagedPolicy'
+      mfaType:
+        type: string
+        enum:
+          - none
+          - mobile-otp
+          - google-auth
+      status:
+        type: string
+        enum:
+          - enabled
+          - disabled
+          - deleted
+      userId:
+        type: string
+      username:
         type: string
         
   WeekAndDay:
