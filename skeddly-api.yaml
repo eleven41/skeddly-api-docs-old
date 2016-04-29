@@ -2,7 +2,7 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "0.0.3"
+  version: "0.0.4"
   title: Skeddly API
   contact:
     name: Skeddly Support
@@ -388,7 +388,37 @@ paths:
           # Use JSON Schema format
           schema:
             $ref: '#/definitions/User'
-            
+    
+    put:
+      description: |
+        Changes a user's properties.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to be modified.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Payload for the modify user command
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyUser'
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          
   /Users/{id}/Password:
     put:
       description: |
@@ -684,6 +714,19 @@ definitions:
         type: string
       name:
         type: string
+        
+  ModifyUser:
+    type: object
+    properties:
+      emailAddress:
+        type: string
+        description: New email address for the user.
+      status:
+        type: string
+        description: New status for the user.
+        enum:
+          - disabled
+          - enabled
      
   ModifyUserPassword:
     type: object
