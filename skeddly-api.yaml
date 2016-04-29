@@ -360,6 +360,35 @@ paths:
             items:
               $ref: '#/definitions/User'
               
+    post:
+      description: |
+        Creates a new user.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: body
+          in: body
+          description: Payload for the create user command
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUser'
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/User'
+            
   /Users/{id}:
     get:
       description: |
@@ -418,7 +447,11 @@ paths:
         # Response code
         200:
           description: Successful response
-          
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/User'
+            
   /Users/{id}/Password:
     put:
       description: |
@@ -534,7 +567,23 @@ definitions:
         $ref: '#/definitions/ManagedInstanceStartStopParameters'
       timeZoneId:
         type: string
-        
+  
+  CreateUser:
+    type: object
+    required:
+      - emailAddress
+      - password
+      - username
+    properties:
+      emailAddress:
+        type: string
+        description: New email address for the user.
+      password:
+        type: string
+      username:
+        type: string
+        description: Username for the new user.
+          
   DailyScheduleParameters:
     type: object
     description: Parameters for a 'daily' schedule.
