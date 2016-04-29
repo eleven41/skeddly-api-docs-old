@@ -347,6 +347,14 @@ paths:
       security:
         - accessKeyAuth: []
         
+      parameters:
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+          
       # Expected responses for this operation:
       responses:
         # Response code
@@ -407,6 +415,12 @@ paths:
           description: ID of the user to be retrieved.
           required: true
           type: string    
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
         
       # Expected responses for this operation:
       responses:
