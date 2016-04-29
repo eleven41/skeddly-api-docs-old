@@ -420,6 +420,36 @@ paths:
         200:
           description: Successful response
           
+  /Users/{id}/Mfa:
+    delete:
+      description: |
+        Deletes a user's MFA device information.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user whose MFA device information should be deleted.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Payload for the delete MFA request
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteUserMfa'
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response     
               
 definitions:
 
@@ -495,7 +525,19 @@ definitions:
                 - thursday
                 - friday
                 - saturday
-                
+       
+  DeleteUserMfa:
+    type: object
+    required:
+      - mfaType
+    properties:
+      mfaType:
+        type: string
+        description: Type of MFA to delete.
+        enum:
+          - mobile-otp
+          - google-auth
+        
   HourlyScheduleParameters:
     type: object
     description: Parameters for a 'hourly' schedule.
