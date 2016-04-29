@@ -346,7 +346,7 @@ paths:
       
       security:
         - accessKeyAuth: []
-        
+      
       parameters:
         - name: include
           in: query
@@ -421,7 +421,7 @@ paths:
           required: false
           type: string
           format: comma-seperated list
-        
+          
       # Expected responses for this operation:
       responses:
         # Response code
@@ -497,10 +497,10 @@ paths:
         200:
           description: Successful response
           
-  /Users/{id}/Mfa:
-    delete:
+  /Users/{id}/RemoveMfa:
+    put:
       description: |
-        Deletes a user's MFA device information.
+        Removes a user's MFA device information.
       
       tags:
         - users
@@ -512,22 +512,26 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of the user whose MFA device information should be deleted.
+          description: ID of the user whose MFA device information should be removed.
           required: true
           type: string
         - name: body
           in: body
-          description: Payload for the delete MFA request
+          description: Payload for the remove MFA request
           required: true
           schema:
-            $ref: '#/definitions/DeleteUserMfa'
+            $ref: '#/definitions/RemoveUserMfa'
         
       # Expected responses for this operation:
       responses:
         # Response code
         200:
           description: Successful response     
-              
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/User'
+            
 definitions:
 
   # An Action
@@ -618,18 +622,6 @@ definitions:
                 - thursday
                 - friday
                 - saturday
-       
-  DeleteUserMfa:
-    type: object
-    required:
-      - mfaType
-    properties:
-      mfaType:
-        type: string
-        description: Type of MFA to delete.
-        enum:
-          - mobile-otp
-          - google-auth
         
   HourlyScheduleParameters:
     type: object
@@ -840,7 +832,19 @@ definitions:
     type: object
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
-      
+  
+  RemoveUserMfa:
+    type: object
+    required:
+      - mfaType
+    properties:
+      mfaType:
+        type: string
+        description: Type of MFA to delete.
+        enum:
+          - mobile-otp
+          - google-auth
+          
   ScheduleParameters:
     type: object
     
