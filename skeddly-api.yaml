@@ -671,6 +671,10 @@ definitions:
       username:
         type: string
         description: Username for the new user.
+      managedPolicyIds:
+        type: array
+        items:
+          type: string
           
   DailyScheduleParameters:
     type: object
