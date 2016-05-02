@@ -465,7 +465,68 @@ paths:
           # Use JSON Schema format
           schema:
             $ref: '#/definitions/User'
-            
+  
+  /Users/{id}/ManagedPolicy:
+    post:
+      description: |
+        Attaches a managed policy to a user.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Payload for the command.
+          required: true
+          schema:
+            $ref: '#/definitions/AttachManagedPolicy'
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          
+    delete:
+      description: |
+        Detaches a managed policy from a user.
+      
+      tags:
+        - users
+      
+      security:
+        - accessKeyAuth: []
+        
+      # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Payload for the command.
+          required: true
+          schema:
+            $ref: '#/definitions/DetachManagedPolicy'
+        
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          
   /Users/{id}/Password:
     put:
       description: |
@@ -568,6 +629,15 @@ definitions:
       regionName:
         type: string
   
+  AttachManagedPolicy:
+    type: object
+    required:
+      - managedPolicyId
+    properties:
+      managedPolicyId:
+        type: string
+        description: ID of the managed policy to attach to the user.
+
   CreateManagedInstanceGroup:
     type: object
     required:
@@ -622,6 +692,15 @@ definitions:
                 - thursday
                 - friday
                 - saturday
+  
+  DetachManagedPolicy:
+    type: object
+    required:
+      - managedPolicyId
+    properties:
+      managedPolicyId:
+        type: string
+        description: ID of the managed policy to detach from the user.
         
   HourlyScheduleParameters:
     type: object
