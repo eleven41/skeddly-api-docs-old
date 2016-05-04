@@ -466,8 +466,8 @@ paths:
           schema:
             $ref: '#/definitions/User'
   
-  /Users/{id}/ManagedPolicy:
-    post:
+  /Users/{id}/AttachManagedPolicy:
+    put:
       description: |
         Attaches a managed policy to a user.
       
@@ -496,8 +496,11 @@ paths:
         # Response code
         200:
           description: Successful response
-          
-    delete:
+          schema:
+            $ref: '#/definitions/User'
+            
+  /Users/{id}/DetachManagedPolicy:        
+    put:
       description: |
         Detaches a managed policy from a user.
       
@@ -526,7 +529,9 @@ paths:
         # Response code
         200:
           description: Successful response
-          
+          schema:
+            $ref: '#/definitions/User'
+            
   /Users/{id}/Password:
     put:
       description: |
@@ -1007,6 +1012,7 @@ definitions:
           - deleted
       userId:
         type: string
+        example: "u-12345678"
       username:
         type: string
         
