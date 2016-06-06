@@ -1,0 +1,1 @@
+aws s3 sync generated\html s3://docs.skeddly.com
