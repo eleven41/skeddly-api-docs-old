@@ -2,7 +2,7 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "0.0.4"
+  version: "@version"
   title: Skeddly API
   contact:
     name: Skeddly Support
