@@ -10,6 +10,7 @@ info:
     name: Skeddly Support
     url: https://app.skeddly.com/Support
     email: support@skeddly.com
+  termsOfService: https://skeddly.desk.com/customer/en/portal/articles/1350027-license-agreement
   license:
     name: Skeddly License Agreement
     url: https://skeddly.desk.com/customer/en/portal/articles/1350027-license-agreement
@@ -41,6 +42,169 @@ securityDefinitions:
     
 paths:
 
+  # Action Executions
+  /ActionExecutions:
+    get:
+      description: |
+        Retrieves the list of action executions.
+      tags:
+        - action-executions
+      security:
+        - accessKeyAuth: []
+        # This is array of GET operation parameters:
+      parameters:
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.status
+          in: query
+          description: Execution status to limit resulut. 
+          required: false
+          type: string
+          enum:
+            - all
+            - errorsOnly
+            - completedOnly
+            - runningOnly
+        - name: filter.actionIds
+          in: query
+          description: List of action IDs.
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.credentialIds
+          in: query
+          description: List of credential IDs.
+          required: false
+          type: string
+          format: comma-seperated list
+        - name: filter.actionClasses
+          in: query
+          description: Types of actions for which to include executions.
+          required: false
+          type: string
+          enum:
+            - standard
+            - managedInstances
+          format: comma-seperated list
+        - name: filter.dateComparesTo
+          in: query
+          description: Indicator to which the date range references.
+          required: false
+          type: string
+          enum:
+            - startDate
+            - endDate
+        - name: filter.range.inclusiveStart
+          in: query
+          description: Start date (inclusive) of the date range, in ISO8601 format.
+          required: false
+          type: string
+          format: date-time
+        - name: filter.range.exclusiveEnd
+          in: query
+          description: End date (exclusive) of the date range, in ISO8601 format.
+          required: false
+          type: string
+          format: date-time
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListActionExecutionsResponse
+            type: array
+            items:
+              $ref: '#/definitions/ActionExecution'
+              
+  /ActionExecutions/Upcoming:
+    get:
+      description: |
+        Retrieves the list of upcoming action executions.
+      tags:
+        - action-executions
+      security:
+        - accessKeyAuth: []
+        # This is array of GET operation parameters:
+      parameters:
+        - name: filter.actionClasses
+          in: query
+          description: Types of actions for which to include executions.
+          required: false
+          type: string
+          enum:
+            - standard
+            - managedInstances
+          format: comma-seperated list
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListUpcomingActionExecutionsResponse
+            type: array
+            items:
+              $ref: '#/definitions/UpcomingActionExecution'
+              
+  /ActionExecutions/{id}:
+    get:
+      description: |
+        Retrieves information of an action executions.
+      tags:
+        - action-executions
+      security:
+        - accessKeyAuth: []
+        # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the action execution.
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/ActionExecution'
+              
+  /ActionExecutions/{id}/Cancel:
+    put:
+      description: |
+        Stops a running action exection.
+      tags:
+        - action-executions
+      security:
+        - accessKeyAuth: []
+        # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the action execution.
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/ActionExecution'
+            
   # Actions
   /Actions:
     get:
@@ -324,13 +488,10 @@ paths:
     put:
       description: |
         Modifies an existing Managed Instance Group.
-        
       tags:
         - managed-instances
-      
       security:
         - accessKeyAuth: []
-        
       parameters:
         - name: id
           in: path
@@ -343,12 +504,27 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/ModifyManagedInstanceGroup'
-          
       responses:
         200:
           description: Successful response
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
+    delete:
+      description: |
+        Deletes an existing Managed Instance Group.
+      tags:
+        - managed-instances
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing Managed Instance Group to be deleted.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
   
   # Managed Policies
   /ManagedPolicies:
@@ -408,13 +584,10 @@ paths:
     get:
       description: |
         Retrieves the policy document for a single managed policy.
-      
       tags:
         - users
-      
       security:
         - accessKeyAuth: []
-        
       # This is array of GET operation parameters:
       parameters:
         - name: id
@@ -422,7 +595,6 @@ paths:
           description: ID of the managed policy.
           required: true
           type: string    
-        
       # Expected responses for this operation:
       responses:
         # Response code
@@ -786,6 +958,67 @@ definitions:
       regionName:
         type: string
   
+  ActionExecution:
+    type: object
+    properties:
+      actionExecutionId:
+        type: string
+        description: ID of the action execution.
+      status:
+        type: string
+        description: Status of the execution.
+        enum:
+          - running
+          - complete
+          - cancelling
+      startDate:
+        type: string
+        description: Date, in ISO8601 format, when the execution started.
+        format: date-time
+      endDate:
+        type: string
+        description: Date, in ISO8601 format, when the execution finished.
+        format: date-time
+      trigger:
+        type: string
+        description: Method in which the execution was started.
+        enum:
+          - schedule
+          - user
+          - sns
+      result:
+        type: object
+        properties:
+          code:
+            type: integer
+            description: Result code for the execution.
+            format: int32
+            minimum: 0
+          text:
+            type: string
+            description: Reslut text for the execution.
+      actionId:
+        type: string
+        description: ID of the action that was executed.
+      actionVersionId:
+        type: string
+        description: Version ID of the action that was executed.
+      actionType:
+        type: string
+        description: Type identifier of the action.
+      actionName:
+        type: string
+        description: Name of the action.
+      timeZoneId:
+        type: string
+        description: ID of the time zone in which the action executed.
+      credentialId:
+        type: string
+        description: ID of the credentials used.
+      managedInstanceId:
+        type: string
+        description: ID of the managed instance to which the action belongs.
+        
   AmazonIamRoleExternalId:
     type: object
     properties:
@@ -1287,6 +1520,32 @@ definitions:
       timeZoneId:
         type: string
   
+  UpcomingActionExecution:
+    type: object
+    properties:
+      actionId:
+        type: string
+        description: ID of the action that will executed.
+      actionName:
+        type: string
+        description: Name of the action.
+      actionType:
+        type: string
+        description: Type identifier of the action.
+      actionVersionId:
+        type: string
+        description: Version ID of the action that will executed.
+      managedInstanceId:
+        type: string
+        description: ID of the managed instance to which the action belongs.
+      startDate:
+        type: string
+        description: Date, in ISO8601 format, when the execution will start.
+        format: date-time
+      timeZoneId:
+        type: string
+        description: ID of the time zone in which the action will execute.
+        
   User:
     type: object
     description: A user.
