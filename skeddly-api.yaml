@@ -252,6 +252,31 @@ paths:
             items:
               $ref: '#/definitions/Action'
   
+  /Actions/{id}/Execute:
+    put:
+      description: Executes an existing action.
+      tags:
+        - actions
+      security:
+        - accessKeyAuth: []
+        # This is array of GET operation parameters:
+      parameters:
+        - name: id
+          in: path
+          description: ID of an existing action.
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/ActionExecution'
+              
+              
   /Credentials:
     get:
       description: |
