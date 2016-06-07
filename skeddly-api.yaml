@@ -2,13 +2,18 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "@version"
   title: Skeddly API
+  description: Skeddly API server.
+  version: "1.0.0"
+  x-spec-version: "@build"
   contact:
     name: Skeddly Support
     url: https://app.skeddly.com/Support
     email: support@skeddly.com
-
+  license:
+    name: Skeddly License Agreement
+    url: https://skeddly.desk.com/customer/en/portal/articles/1350027-license-agreement
+    
 # the domain of the service
 host: api.skeddly.com
 
@@ -41,13 +46,10 @@ paths:
     get:
       description: |
         Retrieves the list of actions.
-      
       tags:
         - actions
-      
       security:
         - accessKeyAuth: []
-        
         # This is array of GET operation parameters:
       parameters:
         - name: include
@@ -73,7 +75,6 @@ paths:
           description: True or False.
           required: false
           type: boolean
-
       # Expected responses for this operation:
       responses:
         # Response code
@@ -91,13 +92,10 @@ paths:
     get:
       description: |
         Retrieves the list of credentials.
-      
       tags:
         - credentials
-      
       security:
         - accessKeyAuth: []
-        
         # This is array of GET operation parameters:
       parameters:
         - name: filter.credentialIds
@@ -111,7 +109,6 @@ paths:
           description: True or False.
           required: false
           type: boolean
-
       # Expected responses for this operation:
       responses:
         # Response code
@@ -122,7 +119,124 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Credential'
+    post:
+      description: |
+        Creates a new credential.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: body
+          in: body
+          description: Credential information to be created.
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCredential'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Credential'
+            
+  /Credentials/{id}: 
+    get:
+      description: |
+        Retrieves an existing credential.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing credential to be retrieved.
+          required: true
+          type: string
+        - name: filter.isIncludeDeleted
+          in: query
+          description: True or False.
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Credential'
+    put:
+      description: |
+        Modifies an existing credential.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing credential to be modified.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Credential information to be modified.
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyCredential'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Credential'
+    delete:
+      description: |
+        Deletes an existing credential.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the existing credential to be deleted.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
   
+  /Credentials/{id}/IamPolicy: 
+    get:
+      description: |
+        Retrieves an IAM policy for the specified credential.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of an existing credential.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: string
+            
+  /Credentials/GenerateAmazonIamRoleExternalId: 
+    get:
+      description: Generates an external ID to be used when creating an IAM role to be used by Skeddly.
+      tags:
+        - credentials
+      security:
+        - accessKeyAuth: []
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AmazonIamRoleExternalId'
+            
   # Managed Instance Groups
   /ManagedInstanceGroups:
     get:
@@ -207,7 +321,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/ManagedInstanceGroup'
-            
     put:
       description: |
         Modifies an existing Managed Instance Group.
@@ -673,6 +786,17 @@ definitions:
       regionName:
         type: string
   
+  AmazonIamRoleExternalId:
+    type: object
+    properties:
+      externalId:
+        type: string
+        description: External ID to be used in the trust relationship of the IAM role.
+      expiryDate:
+        type: string
+        description: Date, in ISO8601 format, when the external ID will expire. The external ID must be used to create an IAM role before the expiry date.
+        format: date-time
+        
   AttachManagedPolicy:
     type: object
     required:
@@ -681,7 +805,51 @@ definitions:
       managedPolicyId:
         type: string
         description: ID of the managed policy to attach to the user.
-
+  
+  CreateCredential:
+    type: object
+    required:
+      - cloudProviderSubTypeId
+      - credentialType
+      - name
+    properties:
+      cloudProviderSubTypeId:
+        type: string
+        description: Cloud-provider sub-type.
+        enum:
+          - amazon-standard
+          - amazon-govcloud-us
+          - amazon-china
+      credentialType:
+        type: string
+        description: Type of credential.
+        enum:
+          - amazon-access-key
+          - amazon-iam-role
+      name:
+        type: string
+        description: Friendly name of the credential.
+      roleArn:
+        type: string
+        description: ARN for the IAM role. Required if credentialType is "amazon-iam-role".
+        minLength: 1
+        maxLength: 100
+      externalId:
+        type: string
+        description: External ID for the IAM role. Required if credentialType is "amazon-iam-role".
+        minLength: 10
+        maxLength: 32
+      accessKeyId:
+        type: string
+        description: Access Key ID of the IAM user. Required if credentialType is "amazon-access-key".
+        minLength: 20
+        maxLength: 20
+      secretAccessKey:
+        type: string
+        description: Secret access Key of the IAM user. Required if credentialType is "amazon-access-key".
+        minLength: 40
+        maxLength: 40
+          
   CreateManagedInstanceGroup:
     type: object
     required:
@@ -962,6 +1130,41 @@ definitions:
       name:
         type: string
   
+  ModifyCredential:
+    type: object
+    properties:
+      cloudProviderSubTypeId:
+        type: string
+        description: New cloud-provider sub-type.
+        enum:
+          - amazon-standard
+          - amazon-govcloud-us
+          - amazon-china
+      name:
+        type: string
+        maxLength: 255
+        description: New name of the credential.
+      roleArn:
+        type: string
+        description: New ARN for the IAM role. Allowed only if credentialType is "amazon-iam-role".
+        minLength: 1
+        maxLength: 100
+      externalId:
+        type: string
+        description: New external ID for the IAM role. Allowed only if credentialType is "amazon-iam-role".
+        minLength: 10
+        maxLength: 32
+      accessKeyId:
+        type: string
+        description: New access Key ID of the IAM user. Allowed only if credentialType is "amazon-access-key".
+        minLength: 20
+        maxLength: 20
+      secretAccessKey:
+        type: string
+        description: New secret access Key of the IAM user. Allowed only if credentialType is "amazon-access-key".
+        minLength: 40
+        maxLength: 40
+        
   ModifyManagedInstanceGroup:
     type: object
     required:
