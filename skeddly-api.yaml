@@ -61,7 +61,7 @@ paths:
           format: comma-seperated list
         - name: filter.status
           in: query
-          description: Execution status to limit resulut. 
+          description: Execution status to limit results. 
           required: false
           type: string
           enum:
@@ -630,6 +630,97 @@ paths:
           schema:
             type: string
 
+  # Regions           
+  /Regions:
+    get:
+      description: |
+        Retrieves the list of available regions.
+      tags:
+        - regions
+      security:
+        - accessKeyAuth: []
+      # Expected responses for this operation:
+      parameters:
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+          enum:
+            - availabilityZones
+        - name: cloudProviderId
+          in: query
+          description: ID of the cloud-provider.
+          required: false
+          type: string
+          enum:
+            - amazon
+        - name: cloudProviderSubTypeId
+          in: query
+          description: ID of the cloud-provider sub-type.
+          required: false
+          type: string
+          enum:
+            - amazon-standard
+            - amazon-govcloud-us
+            - amazon-china
+        - name: credentialId
+          in: query
+          description: ID of the credential to which compatible regions will be returned. 
+          required: false
+          type: string
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ListRegionsResponse
+            type: array
+            items:
+              $ref: '#/definitions/Region'
+              
+  /Regions/{id}:
+    get:
+      description: Retrieves information for a single region.
+      tags:
+        - regions
+      security:
+        - accessKeyAuth: []
+      # Expected responses for this operation:
+      parameters:
+        - name: id
+          in: path
+          description: ID of the region.
+          required: true
+          type: string    
+        - name: include
+          in: query
+          description: List of extra data to include in the results 
+          required: false
+          type: string
+          format: comma-seperated list
+          enum:
+            - availabilityZones
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/Region'
+          examples:
+            application/json:
+              regionName: us-east-1
+              displayName: N. Virginia
+              cloudProviderSubTypeId: amazon-standard
+              availabilityZones:
+                - us-east-1a
+                - us-east-1b
+                
   # Time Zones            
   /TimeZones:
     get:
@@ -637,7 +728,7 @@ paths:
         Retrieves the list of available time zones.
       
       tags:
-        - actions
+        - time-zones
       
       security:
         - accessKeyAuth: []
@@ -661,7 +752,7 @@ paths:
         Retrieves information about a single time zone.
       
       tags:
-        - actions
+        - time-zones
       
       security:
         - accessKeyAuth: []
@@ -1505,6 +1596,29 @@ definitions:
     allOf:
       - $ref: '#/definitions/ScheduleParameters'
   
+  Region:
+    type: object
+    description: A region.
+    required:
+      - displayName
+      - regionName
+      - cloudProviderSubTypeId
+    properties:
+      displayName:
+        type: string
+      regionName:
+        type: string
+      cloudProviderSubTypeId:
+        type: string
+        enum:
+          - amazon-standard
+          - amazon-govcloud-us
+          - amazon-china
+      availabilityZones:
+        type: array
+        items:
+          type: string
+          
   RemoveUserMfa:
     type: object
     required:
